@@ -6,6 +6,10 @@ import {
 } from "firebase/firestore";
 import { db } from "./config";
 
+export const SUPER_ADMIN_EMAIL = "serem695@gmail.com";
+
+export const isAdmin = (user) => user?.email === SUPER_ADMIN_EMAIL;
+
 // ── Recipes ──────────────────────────────────────────────
 export const addRecipe = (data) =>
   addDoc(collection(db, "recipes"), { ...data, createdAt: serverTimestamp(), likes: 0, likedBy: [] });
