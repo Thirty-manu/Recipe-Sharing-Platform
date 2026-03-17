@@ -13,6 +13,7 @@ import Favorites from "./pages/Favorites";
 import MyRecipes from "./pages/MyRecipes";
 import AddRecipe from "./pages/AddRecipe";
 import Profile from "./pages/Profile";
+import MealPlanner from "./pages/MealPlanner";
 import "./styles/globals.css";
 
 export default function App() {
@@ -55,33 +56,23 @@ export default function App() {
           .close-sidebar { display: flex !important; }
         }
       `}</style>
-
       <div style={{ display: "flex", height: "100vh", overflow: "hidden" }}>
-        <Sidebar page={page} setPage={setPage} user={user} onLogout={logout}
-          mobileOpen={mobileOpen} setMobileOpen={setMobileOpen} />
-
+        <Sidebar page={page} setPage={setPage} user={user} onLogout={logout} mobileOpen={mobileOpen} setMobileOpen={setMobileOpen} />
         <div style={{ flex: 1, display: "flex", flexDirection: "column", overflow: "hidden" }}>
-          <Header page={page} search={search} setSearch={setSearch}
-            onMenuClick={() => setMobileOpen(true)} />
-
+          <Header page={page} search={search} setSearch={setSearch} onMenuClick={() => setMobileOpen(true)} />
           <main style={{ flex: 1, overflow: "hidden" }}>
-            {page === "discover"  && <Discover  {...pageProps} />}
-            {page === "trending"  && <Trending  {...pageProps} />}
-            {page === "favorites" && <Favorites {...pageProps} />}
-            {page === "myrecipes" && <MyRecipes {...pageProps} />}
-            {page === "addrecipe" && <AddRecipe user={user} onDone={() => setPage("myrecipes")} />}
-            {page === "profile"   && <Profile   user={user} userProfile={userProfile} />}
+            {page === "discover"    && <Discover    {...pageProps} />}
+            {page === "trending"    && <Trending    {...pageProps} />}
+            {page === "favorites"   && <Favorites   {...pageProps} />}
+            {page === "myrecipes"   && <MyRecipes   {...pageProps} />}
+            {page === "addrecipe"   && <AddRecipe   user={user} onDone={() => setPage("myrecipes")} />}
+            {page === "mealplanner" && <MealPlanner user={user} />}
+            {page === "profile"     && <Profile     user={user} userProfile={userProfile} />}
           </main>
         </div>
       </div>
-
-      {modalRecipe && (
-        <RecipeModal recipe={modalRecipe} user={user} userProfile={userProfile} onClose={() => setModalRecipe(null)} />
-      )}
-
-      <Toaster position="bottom-right" toastOptions={{
-        style: { background: "#1a1d2e", color: "#e3e5e8", border: "1px solid #1e2130", fontFamily: "'Plus Jakarta Sans', sans-serif" }
-      }} />
+      {modalRecipe && <RecipeModal recipe={modalRecipe} user={user} userProfile={userProfile} onClose={() => setModalRecipe(null)} />}
+      <Toaster position="bottom-right" toastOptions={{ style: { background: "#1a1d2e", color: "#e3e5e8", border: "1px solid #1e2130", fontFamily: "'Plus Jakarta Sans', sans-serif" } }} />
     </>
   );
 }
