@@ -9,6 +9,11 @@ const DAYS = ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sun
 const MEALS = ["Breakfast","Lunch","Dinner"];
 const MEAL_ICONS = { Breakfast: "🌅", Lunch: "☀️", Dinner: "🌙" };
 
+// Skeleton cell
+const SkeletonCell = () => (
+  <div style={{ minHeight: 80, borderRadius: 10, background: "var(--bg-card)", border: "1px solid var(--border)", animation: "pulse 1.5s ease-in-out infinite" }} />
+);
+
 export default function MealPlanner({ user }) {
   const { recipes } = useAllRecipes();
   const [plan, setPlan] = useState({});
@@ -24,8 +29,13 @@ export default function MealPlanner({ user }) {
     const unsub = onSnapshot(ref, (snap) => {
       if (snap.exists()) setPlan(snap.data().plan || {});
       setLoading(false);
+    }, () => {
+      // On error still stop loading
+      setLoading(false);
     });
-    return unsub;
+    // Stop skeleton after 1.5s max regardless
+    const timer = setTimeout(() => setLoading(false), 1500);
+    return () => { unsub(); clearTimeout(timer); };
   }, [user]);
 
   const savePlan = async (newPlan) => {
@@ -75,39 +85,44 @@ export default function MealPlanner({ user }) {
   const plannedCount = Object.keys(plan).length;
   const filteredRecipes = recipes.filter(r => r.title?.toLowerCase().includes(search.toLowerCase()));
 
-  if (loading) return (
-    <div style={{ height: "100%", display: "flex", alignItems: "center", justifyContent: "center" }}>
-      <div style={{ fontSize: 32, animation: "spin 1s linear infinite" }}>🍳</div>
-    </div>
-  );
-
   return (
     <div style={{ height: "100%", overflowY: "auto", padding: "24px 28px" }}>
+      <style>{`
+        @keyframes pulse {
+          0%, 100% { opacity: 1; }
+          50% { opacity: 0.4; }
+        }
+      `}</style>
+
+      {/* Header */}
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 24, flexWrap: "wrap", gap: 12 }}>
         <div>
           <h3 style={{ fontWeight: 800, fontSize: 20, marginBottom: 4 }}>Weekly Meal Planner</h3>
-          <p style={{ color: "var(--text-muted)", fontSize: 14 }}>{plannedCount} of {DAYS.length * MEALS.length} slots filled</p>
+          <p style={{ color: "var(--text-muted)", fontSize: 14 }}>
+            {loading ? "Loading your plan..." : `${plannedCount} of ${DAYS.length * MEALS.length} slots filled`}
+          </p>
         </div>
-        <div style={{ display: "flex", gap: 10 }}>
-          {plannedCount > 0 && (
-            <>
-              <button onClick={() => setShowShopping(true)} style={{ display: "flex", alignItems: "center", gap: 8, padding: "9px 16px", background: "var(--accent)", color: "#fff", borderRadius: 8, fontSize: 14, fontWeight: 600 }}>
-                <ShoppingCart size={15} /> Shopping List ({shoppingList.length})
-              </button>
-              <button onClick={clearPlan} style={{ display: "flex", alignItems: "center", gap: 8, padding: "9px 14px", background: "var(--bg-card)", border: "1px solid var(--border)", color: "var(--text-muted)", borderRadius: 8, fontSize: 14 }}>
-                <Trash2 size={14} />
-              </button>
-            </>
-          )}
-        </div>
+        {!loading && plannedCount > 0 && (
+          <div style={{ display: "flex", gap: 10 }}>
+            <button onClick={() => setShowShopping(true)} style={{ display: "flex", alignItems: "center", gap: 8, padding: "9px 16px", background: "var(--accent)", color: "#fff", borderRadius: 8, fontSize: 14, fontWeight: 600 }}>
+              <ShoppingCart size={15} /> Shopping List ({shoppingList.length})
+            </button>
+            <button onClick={clearPlan} style={{ display: "flex", alignItems: "center", gap: 8, padding: "9px 14px", background: "var(--bg-card)", border: "1px solid var(--border)", color: "var(--text-muted)", borderRadius: 8, fontSize: 14 }}>
+              <Trash2 size={14} />
+            </button>
+          </div>
+        )}
       </div>
 
+      {/* Progress bar */}
       <div style={{ background: "var(--bg-card)", border: "1px solid var(--border)", borderRadius: 8, height: 8, marginBottom: 28, overflow: "hidden" }}>
-        <div style={{ height: "100%", background: "var(--accent)", borderRadius: 8, width: `${(plannedCount / (DAYS.length * MEALS.length)) * 100}%`, transition: "width .4s ease" }} />
+        <div style={{ height: "100%", background: loading ? "var(--input-border)" : "var(--accent)", borderRadius: 8, width: loading ? "30%" : `${(plannedCount / (DAYS.length * MEALS.length)) * 100}%`, transition: "width .4s ease", animation: loading ? "pulse 1.5s ease-in-out infinite" : "none" }} />
       </div>
 
+      {/* Grid */}
       <div style={{ overflowX: "auto" }}>
         <div style={{ minWidth: 700 }}>
+          {/* Day headers */}
           <div style={{ display: "grid", gridTemplateColumns: "100px repeat(7, 1fr)", gap: 8, marginBottom: 8 }}>
             <div />
             {DAYS.map(day => (
@@ -117,6 +132,7 @@ export default function MealPlanner({ user }) {
             ))}
           </div>
 
+          {/* Meal rows */}
           {MEALS.map(meal => (
             <div key={meal} style={{ display: "grid", gridTemplateColumns: "100px repeat(7, 1fr)", gap: 8, marginBottom: 8 }}>
               <div style={{ display: "flex", alignItems: "center", gap: 6, padding: "8px 4px" }}>
@@ -126,6 +142,10 @@ export default function MealPlanner({ user }) {
               {DAYS.map(day => {
                 const key = `${day}_${meal}`;
                 const entry = plan[key];
+
+                // Show skeleton while loading
+                if (loading) return <SkeletonCell key={day} />;
+
                 return (
                   <div key={day}>
                     {entry ? (
@@ -138,7 +158,8 @@ export default function MealPlanner({ user }) {
                         {entry.cookTime > 0 && <p style={{ fontSize: 10, color: "var(--text-muted)" }}>⏱ {entry.cookTime}m</p>}
                       </div>
                     ) : (
-                      <button onClick={() => setShowPicker({ day, meal })} style={{ width: "100%", minHeight: 80, background: "var(--bg-card)", border: "1px dashed var(--input-border)", borderRadius: 10, display: "flex", alignItems: "center", justifyContent: "center", color: "var(--text-muted)", transition: "all .15s", cursor: "pointer" }}
+                      <button onClick={() => setShowPicker({ day, meal })}
+                        style={{ width: "100%", minHeight: 80, background: "var(--bg-card)", border: "1px dashed var(--input-border)", borderRadius: 10, display: "flex", alignItems: "center", justifyContent: "center", color: "var(--text-muted)", transition: "all .15s", cursor: "pointer" }}
                         onMouseOver={e => { e.currentTarget.style.borderColor = "var(--accent)"; e.currentTarget.style.color = "var(--accent)"; }}
                         onMouseOut={e => { e.currentTarget.style.borderColor = "var(--input-border)"; e.currentTarget.style.color = "var(--text-muted)"; }}
                       >
@@ -153,6 +174,7 @@ export default function MealPlanner({ user }) {
         </div>
       </div>
 
+      {/* Recipe Picker Modal */}
       {showPicker && (
         <div onClick={() => { setShowPicker(null); setSearch(""); }} style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,.75)", zIndex: 100, display: "flex", alignItems: "center", justifyContent: "center", padding: 20 }}>
           <div onClick={e => e.stopPropagation()} style={{ background: "var(--bg-main)", border: "1px solid var(--border)", borderRadius: 18, width: "100%", maxWidth: 520, maxHeight: "80vh", display: "flex", flexDirection: "column", overflow: "hidden" }}>
@@ -174,7 +196,8 @@ export default function MealPlanner({ user }) {
                   <p>No recipes found</p>
                 </div>
               ) : filteredRecipes.map(r => (
-                <button key={r.id} onClick={() => addMeal(r)} style={{ display: "flex", gap: 12, alignItems: "center", padding: "10px 12px", background: "var(--bg-card)", border: "1px solid var(--border)", borderRadius: 10, cursor: "pointer", textAlign: "left", transition: "border-color .15s" }}
+                <button key={r.id} onClick={() => addMeal(r)}
+                  style={{ display: "flex", gap: 12, alignItems: "center", padding: "10px 12px", background: "var(--bg-card)", border: "1px solid var(--border)", borderRadius: 10, cursor: "pointer", textAlign: "left", transition: "border-color .15s" }}
                   onMouseOver={e => e.currentTarget.style.borderColor = "var(--accent)"}
                   onMouseOut={e => e.currentTarget.style.borderColor = "var(--border)"}
                 >
@@ -197,6 +220,7 @@ export default function MealPlanner({ user }) {
         </div>
       )}
 
+      {/* Shopping List Modal */}
       {showShopping && (
         <div onClick={() => setShowShopping(false)} style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,.75)", zIndex: 100, display: "flex", alignItems: "center", justifyContent: "center", padding: 20 }}>
           <div onClick={e => e.stopPropagation()} style={{ background: "var(--bg-main)", border: "1px solid var(--border)", borderRadius: 18, width: "100%", maxWidth: 460, maxHeight: "80vh", display: "flex", flexDirection: "column", overflow: "hidden" }}>
