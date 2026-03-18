@@ -1,16 +1,17 @@
-import { Home, TrendingUp, Star, BookOpen, PlusCircle, User, LogOut, X, Shield, CalendarDays } from "lucide-react";
+import { Home, TrendingUp, Star, BookOpen, PlusCircle, User, LogOut, X, Shield, CalendarDays, Bell } from "lucide-react";
 import { isAdmin } from "../../firebase/firestore";
 
 export default function Sidebar({ page, setPage, user, onLogout, mobileOpen, setMobileOpen }) {
   const admin = isAdmin(user);
   const NAV = [
-    { id: "discover",    label: "Discover",      icon: Home },
-    { id: "trending",    label: "Trending",      icon: TrendingUp },
-    { id: "favorites",   label: "Favorites",     icon: Star },
-    { id: "myrecipes",   label: "My Recipes",    icon: BookOpen },
-    { id: "mealplanner", label: "Meal Planner",  icon: CalendarDays },
+    { id: "discover",    label: "Discover",     icon: Home },
+    { id: "trending",    label: "Trending",     icon: TrendingUp },
+    { id: "favorites",   label: "Favorites",    icon: Star },
+    { id: "cooklater",   label: "Cook Later",   icon: Bell },
+    { id: "myrecipes",   label: "My Recipes",   icon: BookOpen },
+    { id: "mealplanner", label: "Meal Planner", icon: CalendarDays },
     ...(admin ? [{ id: "addrecipe", label: "Add Recipe", icon: PlusCircle }] : []),
-    { id: "profile",     label: "Profile",       icon: User },
+    { id: "profile",     label: "Profile",      icon: User },
   ];
   return (
     <>
@@ -41,6 +42,7 @@ export default function Sidebar({ page, setPage, user, onLogout, mobileOpen, set
               >
                 <Icon size={17} />{label}
                 {id === "mealplanner" && <span style={{ marginLeft: "auto", fontSize: 10, background: "rgba(88,101,242,.2)", color: "var(--accent)", padding: "2px 6px", borderRadius: 10, fontWeight: 700 }}>NEW</span>}
+                {id === "cooklater" && <span style={{ marginLeft: "auto", fontSize: 10, background: "rgba(88,101,242,.2)", color: "var(--accent)", padding: "2px 6px", borderRadius: 10, fontWeight: 700 }}>NEW</span>}
               </button>
             );
           })}

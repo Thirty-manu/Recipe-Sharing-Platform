@@ -1,18 +1,50 @@
-import { Heart, Clock, Users, Star } from "lucide-react";
+import { Heart, Clock, Users, Star, Bell } from "lucide-react";
 import { toggleLike, toggleFavorite } from "../../firebase/firestore";
+import { doc, updateDoc, arrayUnion, arrayRemove, getDoc } from "firebase/firestore";
+import { db } from "../../firebase/config";
 import toast from "react-hot-toast";
+
 const DIFF_COLOR = { Easy: "#3ba55d", Medium: "#faa61a", Hard: "#ed4245" };
+
 export default function RecipeCard({ recipe, user, userProfile, onOpen }) {
   const liked = recipe.likedBy?.includes(user.uid);
   const fav = userProfile?.favorites?.includes(recipe.id);
+  const cookLater = userProfile?.cookLater?.some(i => i.id === recipe.id);
+
   const handleLike = async (e) => { e.stopPropagation(); try { await toggleLike(recipe.id, user.uid, liked); } catch { toast.error("Couldn't update like"); } };
   const handleFav = async (e) => { e.stopPropagation(); try { await toggleFavorite(user.uid, recipe.id, fav); toast.success(fav ? "Removed from favorites" : "Added to favorites! ⭐"); } catch { toast.error("Couldn't update favorites"); } };
+
+  const handleCookLater = async (e) => {
+    e.stopPropagation();
+    try {
+      const ref = doc(db, "users", user.uid);
+      if (cookLater) {
+        const snap = await getDoc(ref);
+        const existing = snap.data()?.cookLater?.find(i => i.id === recipe.id);
+        if (existing) await updateDoc(ref, { cookLater: arrayRemove(existing) });
+        toast.success("Removed from Cook Later");
+      } else {
+        await updateDoc(ref, { cookLater: arrayUnion({ id: recipe.id, note: "", addedAt: new Date().toISOString() }) });
+        toast.success("Saved to Cook Later! 🔔");
+      }
+    } catch { toast.error("Couldn't update Cook Later"); }
+  };
+
   return (
-    <div onClick={() => onOpen(recipe)} style={{ background: "var(--bg-card)", border: "1px solid var(--border)", borderRadius: 14, overflow: "hidden", cursor: "pointer", transition: "transform .2s, border-color .2s", display: "flex", flexDirection: "column" }} onMouseOver={e => { e.currentTarget.style.transform = "translateY(-2px)"; e.currentTarget.style.borderColor = "var(--accent)"; }} onMouseOut={e => { e.currentTarget.style.transform = "translateY(0)"; e.currentTarget.style.borderColor = "var(--border)"; }}>
+    <div onClick={() => onOpen(recipe)}
+      style={{ background: "var(--bg-card)", border: "1px solid var(--border)", borderRadius: 14, overflow: "hidden", cursor: "pointer", transition: "transform .2s, border-color .2s", display: "flex", flexDirection: "column" }}
+      onMouseOver={e => { e.currentTarget.style.transform = "translateY(-2px)"; e.currentTarget.style.borderColor = "var(--accent)"; }}
+      onMouseOut={e => { e.currentTarget.style.transform = "translateY(0)"; e.currentTarget.style.borderColor = "var(--border)"; }}
+    >
       <div style={{ height: 180, overflow: "hidden", position: "relative", background: "#0a0c14" }}>
         {recipe.image ? <img src={recipe.image} alt={recipe.title} style={{ width: "100%", height: "100%", objectFit: "cover" }} /> : <div style={{ height: "100%", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 48 }}>🍽️</div>}
-        <div style={{ position: "absolute", top: 10, right: 10 }}>
-          <button onClick={handleFav} style={{ background: "rgba(0,0,0,.6)", borderRadius: 8, padding: "5px 7px", color: fav ? "#faa61a" : "#fff", display: "flex", alignItems: "center" }}><Star size={14} fill={fav ? "#faa61a" : "none"} /></button>
+        <div style={{ position: "absolute", top: 10, right: 10, display: "flex", gap: 6 }}>
+          <button onClick={handleCookLater} style={{ background: "rgba(0,0,0,.6)", borderRadius: 8, padding: "5px 7px", color: cookLater ? "var(--accent)" : "#fff", display: "flex", alignItems: "center" }}>
+            <Bell size={14} fill={cookLater ? "var(--accent)" : "none"} />
+          </button>
+          <button onClick={handleFav} style={{ background: "rgba(0,0,0,.6)", borderRadius: 8, padding: "5px 7px", color: fav ? "#faa61a" : "#fff", display: "flex", alignItems: "center" }}>
+            <Star size={14} fill={fav ? "#faa61a" : "none"} />
+          </button>
         </div>
         <div style={{ position: "absolute", bottom: 10, left: 10 }}>
           <span style={{ background: DIFF_COLOR[recipe.difficulty] || "var(--accent)", color: "#fff", fontSize: 11, fontWeight: 700, padding: "3px 8px", borderRadius: 6 }}>{recipe.difficulty || "Easy"}</span>

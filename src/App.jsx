@@ -14,6 +14,7 @@ import MyRecipes from "./pages/MyRecipes";
 import AddRecipe from "./pages/AddRecipe";
 import Profile from "./pages/Profile";
 import MealPlanner from "./pages/MealPlanner";
+import CookLater from "./pages/CookLater";
 import "./styles/globals.css";
 
 export default function App() {
@@ -64,6 +65,7 @@ export default function App() {
             {page === "discover"    && <Discover    {...pageProps} />}
             {page === "trending"    && <Trending    {...pageProps} />}
             {page === "favorites"   && <Favorites   {...pageProps} />}
+            {page === "cooklater"   && <CookLater   user={user} onOpen={setModalRecipe} />}
             {page === "myrecipes"   && <MyRecipes   {...pageProps} />}
             {page === "addrecipe"   && <AddRecipe   user={user} onDone={() => setPage("myrecipes")} />}
             {page === "mealplanner" && <MealPlanner user={user} />}

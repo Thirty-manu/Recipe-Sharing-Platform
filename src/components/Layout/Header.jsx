@@ -1,5 +1,14 @@
 import { Menu, Search } from "lucide-react";
-const PAGE_TITLES = { discover: { title: "Discover", emoji: "🏠" }, trending: { title: "Trending", emoji: "🔥" }, favorites: { title: "Favorites", emoji: "⭐" }, myrecipes: { title: "My Recipes", emoji: "📖" }, addrecipe: { title: "Add Recipe", emoji: "➕" }, profile: { title: "Profile", emoji: "👤" } };
+const PAGE_TITLES = {
+  discover:    { title: "Discover",      emoji: "🏠" },
+  trending:    { title: "Trending",      emoji: "🔥" },
+  favorites:   { title: "Favorites",     emoji: "⭐" },
+  cooklater:   { title: "Cook Later",    emoji: "🔔" },
+  myrecipes:   { title: "My Recipes",    emoji: "📖" },
+  addrecipe:   { title: "Add Recipe",    emoji: "➕" },
+  mealplanner: { title: "Meal Planner",  emoji: "🗓️" },
+  profile:     { title: "Profile",       emoji: "👤" },
+};
 export default function Header({ page, search, setSearch, onMenuClick }) {
   const { title, emoji } = PAGE_TITLES[page] || {};
   return (
