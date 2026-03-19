@@ -54,10 +54,12 @@ export default function Login({ onLogin }) {
       </div>
 
       {/* Footer */}
-      <p style={{ color: "var(--text-muted)", fontSize: 13, display: "flex", alignItems: "center", gap: 6 }}>
+      <div style={{ display: "flex", alignItems: "center", gap: 8, color: "var(--text-muted)", fontSize: 13 }}>
         <UtensilsCrossed size={13} color="var(--text-muted)" />
-        Project 3 of 20 &nbsp;·&nbsp; by Emmanuel Kipkemboi
-      </p>
+        <span>Project 3 of 20</span>
+        <span style={{ color: "var(--border)" }}>|</span>
+        <span>by Emmanuel Kipkemboi</span>
+      </div>
     </div>
   );
 }
