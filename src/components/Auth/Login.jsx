@@ -13,7 +13,6 @@ export default function Login({ onLogin }) {
       justifyContent: "center", background: "var(--bg-main)",
       flexDirection: "column", gap: 32
     }}>
-      {/* Logo */}
       <div style={{ textAlign: "center" }}>
         <div style={{
           width: 72, height: 72, borderRadius: 20,
@@ -31,7 +30,6 @@ export default function Login({ onLogin }) {
         </p>
       </div>
 
-      {/* Card */}
       <div style={{
         background: "var(--bg-card)", border: "1px solid var(--border)",
         borderRadius: 16, padding: "40px 48px", textAlign: "center",
@@ -51,14 +49,6 @@ export default function Login({ onLogin }) {
         >
           <Chrome size={18} /> Continue with Google
         </button>
-      </div>
-
-      {/* Footer */}
-      <div style={{ display: "flex", alignItems: "center", gap: 8, color: "var(--text-muted)", fontSize: 13 }}>
-        <UtensilsCrossed size={13} color="var(--text-muted)" />
-        <span>Project 3 of 20</span>
-        <span style={{ color: "var(--border)" }}>|</span>
-        <span>by Emmanuel Kipkemboi</span>
       </div>
     </div>
   );
