@@ -7,6 +7,7 @@ import Login from "./components/Auth/Login";
 import Sidebar from "./components/Layout/Sidebar";
 import Header from "./components/Layout/Header";
 import RecipeModal from "./components/Recipe/RecipeModal";
+import ScrollToTop from "./components/UI/ScrollToTop";
 import Discover from "./pages/Discover";
 import Trending from "./pages/Trending";
 import Favorites from "./pages/Favorites";
@@ -37,7 +38,7 @@ export default function App() {
 
   if (loading) return (
     <div style={{ height: "100vh", display: "flex", alignItems: "center", justifyContent: "center", background: "var(--bg-main)" }}>
-      <div style={{ fontSize: 48 }}>🍳</div>
+      <UtensilsCrossed size={40} color="var(--accent)" />
     </div>
   );
 
@@ -49,19 +50,26 @@ export default function App() {
     <>
       <style>{`
         @keyframes spin { to { transform: rotate(360deg); } }
-        @media (max-width: 768px) {
-          .sidebar { position: fixed !important; left: 0; top: 0; transform: translateX(-100%); }
-          .sidebar.sidebar-open { transform: translateX(0) !important; }
-          .mobile-overlay { display: block !important; }
-          .hamburger { display: flex !important; }
-          .close-sidebar { display: flex !important; }
+        @keyframes fadeInUp {
+          from { opacity: 0; transform: translateY(10px); }
+          to   { opacity: 1; transform: translateY(0); }
         }
       `}</style>
+
       <div style={{ display: "flex", height: "100vh", overflow: "hidden" }}>
-        <Sidebar page={page} setPage={setPage} user={user} onLogout={logout} mobileOpen={mobileOpen} setMobileOpen={setMobileOpen} />
+        <Sidebar page={page} setPage={setPage} user={user} onLogout={logout}
+          mobileOpen={mobileOpen} setMobileOpen={setMobileOpen} />
+
         <div style={{ flex: 1, display: "flex", flexDirection: "column", overflow: "hidden" }}>
-          <Header page={page} search={search} setSearch={setSearch} onMenuClick={() => setMobileOpen(true)} />
-          <main style={{ flex: 1, overflow: "hidden" }}>
+          <Header
+            page={page}
+            search={search}
+            setSearch={setSearch}
+            onMenuClick={() => setMobileOpen(true)}
+            user={user}
+            onLogout={logout}
+          />
+          <main data-scrollable style={{ flex: 1, overflow: "hidden" }}>
             {page === "discover"    && <Discover    {...pageProps} />}
             {page === "trending"    && <Trending    {...pageProps} />}
             {page === "favorites"   && <Favorites   {...pageProps} />}
@@ -73,8 +81,17 @@ export default function App() {
           </main>
         </div>
       </div>
-      {modalRecipe && <RecipeModal recipe={modalRecipe} user={user} userProfile={userProfile} onClose={() => setModalRecipe(null)} />}
-      <Toaster position="bottom-right" toastOptions={{ style: { background: "#1a1d2e", color: "#e3e5e8", border: "1px solid #1e2130", fontFamily: "'Plus Jakarta Sans', sans-serif" } }} />
+
+      {modalRecipe && (
+        <RecipeModal recipe={modalRecipe} user={user} userProfile={userProfile}
+          onClose={() => setModalRecipe(null)} />
+      )}
+
+      <ScrollToTop />
+
+      <Toaster position="bottom-right" toastOptions={{
+        style: { background: "#1a1d2e", color: "#e3e5e8", border: "1px solid #1e2130", fontFamily: "'Plus Jakarta Sans', sans-serif" }
+      }} />
     </>
   );
 }
