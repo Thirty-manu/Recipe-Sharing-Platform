@@ -37,8 +37,18 @@ export default function App() {
   useEffect(() => { setSearch(""); }, [page]);
 
   if (loading) return (
-    <div style={{ height: "100vh", display: "flex", alignItems: "center", justifyContent: "center", background: "var(--bg-main)" }}>
-      <UtensilsCrossed size={40} color="var(--accent)" />
+    <div style={{
+      height: "100vh", display: "flex", alignItems: "center",
+      justifyContent: "center", background: "var(--bg-main)"
+    }}>
+      <div style={{
+        width: 48, height: 48, borderRadius: 12,
+        background: "rgba(88,101,242,.15)", border: "1px solid rgba(88,101,242,.3)",
+        display: "flex", alignItems: "center", justifyContent: "center",
+        animation: "pulse 1.5s ease-in-out infinite"
+      }}>
+        <div style={{ width: 24, height: 24, borderRadius: "50%", background: "var(--accent)" }} />
+      </div>
     </div>
   );
 
@@ -50,6 +60,7 @@ export default function App() {
     <>
       <style>{`
         @keyframes spin { to { transform: rotate(360deg); } }
+        @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
         @keyframes fadeInUp {
           from { opacity: 0; transform: translateY(10px); }
           to   { opacity: 1; transform: translateY(0); }
@@ -57,8 +68,10 @@ export default function App() {
       `}</style>
 
       <div style={{ display: "flex", height: "100vh", overflow: "hidden" }}>
-        <Sidebar page={page} setPage={setPage} user={user} onLogout={logout}
-          mobileOpen={mobileOpen} setMobileOpen={setMobileOpen} />
+        <Sidebar
+          page={page} setPage={setPage} user={user} onLogout={logout}
+          mobileOpen={mobileOpen} setMobileOpen={setMobileOpen}
+        />
 
         <div style={{ flex: 1, display: "flex", flexDirection: "column", overflow: "hidden" }}>
           <Header
@@ -83,14 +96,20 @@ export default function App() {
       </div>
 
       {modalRecipe && (
-        <RecipeModal recipe={modalRecipe} user={user} userProfile={userProfile}
-          onClose={() => setModalRecipe(null)} />
+        <RecipeModal
+          recipe={modalRecipe} user={user}
+          userProfile={userProfile} onClose={() => setModalRecipe(null)}
+        />
       )}
 
       <ScrollToTop />
 
       <Toaster position="bottom-right" toastOptions={{
-        style: { background: "#1a1d2e", color: "#e3e5e8", border: "1px solid #1e2130", fontFamily: "'Plus Jakarta Sans', sans-serif" }
+        style: {
+          background: "#1a1d2e", color: "#e3e5e8",
+          border: "1px solid #1e2130",
+          fontFamily: "'Plus Jakarta Sans', sans-serif"
+        }
       }} />
     </>
   );
