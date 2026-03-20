@@ -10,7 +10,7 @@ export const SUPER_ADMIN_EMAIL = "serem695@gmail.com";
 
 export const isAdmin = (user) => user?.email === SUPER_ADMIN_EMAIL;
 
-// ── Recipes ──────────────────────────────────────────────
+
 export const addRecipe = (data) =>
   addDoc(collection(db, "recipes"), { ...data, createdAt: serverTimestamp(), likes: 0, likedBy: [] });
 
@@ -41,7 +41,7 @@ export const subscribeUserRecipes = (uid, callback) => {
   );
 };
 
-// ── Likes ─────────────────────────────────────────────────
+
 export const toggleLike = async (recipeId, userId, liked) => {
   const ref = doc(db, "recipes", recipeId);
   await updateDoc(ref, {
@@ -50,7 +50,6 @@ export const toggleLike = async (recipeId, userId, liked) => {
   });
 };
 
-// ── Favorites ─────────────────────────────────────────────
 export const toggleFavorite = async (userId, recipeId, isFav) => {
   const ref = doc(db, "users", userId);
   await updateDoc(ref, {
@@ -58,7 +57,7 @@ export const toggleFavorite = async (userId, recipeId, isFav) => {
   });
 };
 
-// ── Comments ──────────────────────────────────────────────
+
 export const addComment = (recipeId, data) =>
   addDoc(collection(db, "recipes", recipeId, "comments"), {
     ...data,
