@@ -70,7 +70,7 @@ export const subscribeComments = (recipeId, callback) =>
     (snap) => callback(snap.docs.map((d) => ({ id: d.id, ...d.data() })))
   );
 
-// ── User Profile ──────────────────────────────────────────
+g
 export const upsertUser = (uid, data) =>
   updateDoc(doc(db, "users", uid), data).catch(() =>
     addDoc(collection(db, "users"), { uid, ...data, favorites: [], createdAt: serverTimestamp() })
