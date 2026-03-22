@@ -27,6 +27,32 @@ export default function App() {
   const [modalRecipe, setModalRecipe] = useState(null);
   const [userProfile, setUserProfile] = useState(null);
 
+  // ── Handle browser back button ──────────────────────────
+  useEffect(() => {
+    // Push initial state
+    window.history.pushState({ page: "discover" }, "", "");
+
+    const handlePopState = (e) => {
+      if (e.state?.page) {
+        setPage(e.state.page);
+      } else {
+        // Instead of leaving the app, go to discover
+        setPage("discover");
+        window.history.pushState({ page: "discover" }, "", "");
+      }
+    };
+
+    window.addEventListener("popstate", handlePopState);
+    return () => window.removeEventListener("popstate", handlePopState);
+  }, []);
+
+  // Push state when page changes
+  const navigateTo = (newPage) => {
+    window.history.pushState({ page: newPage }, "", "");
+    setPage(newPage);
+    setSearch("");
+  };
+
   useEffect(() => {
     if (!user) return;
     const unsub = onSnapshot(doc(db, "users", user.uid), snap => {
@@ -34,8 +60,6 @@ export default function App() {
     });
     return unsub;
   }, [user]);
-
-  useEffect(() => { setSearch(""); }, [page]);
 
   if (loading) return (
     <div style={{
@@ -69,14 +93,19 @@ export default function App() {
       `}</style>
 
       <div style={{ display: "flex", height: "100vh", overflow: "hidden" }}>
-        <Sidebar page={page} setPage={setPage} user={user} onLogout={logout}
-          mobileOpen={mobileOpen} setMobileOpen={setMobileOpen} />
+        <Sidebar
+          page={page} setPage={navigateTo} user={user} onLogout={logout}
+          mobileOpen={mobileOpen} setMobileOpen={setMobileOpen}
+        />
 
         <div style={{ flex: 1, display: "flex", flexDirection: "column", overflow: "hidden" }}>
           <Header
-            page={page} search={search} setSearch={setSearch}
+            page={page}
+            search={search}
+            setSearch={setSearch}
             onMenuClick={() => setMobileOpen(true)}
-            user={user} onLogout={logout}
+            user={user}
+            onLogout={logout}
           />
           <main data-scrollable style={{ flex: 1, overflow: "hidden" }}>
             {page === "discover"    && <Discover    {...pageProps} />}
@@ -84,7 +113,7 @@ export default function App() {
             {page === "favorites"   && <Favorites   {...pageProps} />}
             {page === "cooklater"   && <CookLater   user={user} onOpen={setModalRecipe} />}
             {page === "myrecipes"   && <MyRecipes   {...pageProps} />}
-            {page === "addrecipe"   && <AddRecipe   user={user} onDone={() => setPage("myrecipes")} />}
+            {page === "addrecipe"   && <AddRecipe   user={user} onDone={() => navigateTo("myrecipes")} />}
             {page === "mealplanner" && <MealPlanner user={user} />}
             {page === "chat"        && <Chat        user={user} />}
             {page === "profile"     && <Profile     user={user} userProfile={userProfile} />}
@@ -93,14 +122,20 @@ export default function App() {
       </div>
 
       {modalRecipe && (
-        <RecipeModal recipe={modalRecipe} user={user}
-          userProfile={userProfile} onClose={() => setModalRecipe(null)} />
+        <RecipeModal
+          recipe={modalRecipe} user={user}
+          userProfile={userProfile} onClose={() => setModalRecipe(null)}
+        />
       )}
 
       <ScrollToTop />
 
       <Toaster position="bottom-right" toastOptions={{
-        style: { background: "#1a1d2e", color: "#e3e5e8", border: "1px solid #1e2130", fontFamily: "'Plus Jakarta Sans', sans-serif" }
+        style: {
+          background: "#1a1d2e", color: "#e3e5e8",
+          border: "1px solid #1e2130",
+          fontFamily: "'Plus Jakarta Sans', sans-serif"
+        }
       }} />
     </>
   );

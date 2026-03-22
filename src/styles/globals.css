@@ -31,11 +31,17 @@ a { text-decoration: none; color: inherit; }
 
 /* ── Mobile ───────────────────────────────────────────── */
 @media (max-width: 768px) {
+  body { overflow: hidden; }
+
   .sidebar {
     position: fixed !important;
-    left: 0; top: 0;
-    transform: translateX(-100%);
-    z-index: 50;
+    left: 0 !important;
+    top: 0 !important;
+    height: 100vh !important;
+    width: 240px !important;
+    transform: translateX(-100%) !important;
+    z-index: 50 !important;
+    transition: transform .25s ease !important;
   }
   .sidebar.sidebar-open {
     transform: translateX(0) !important;
@@ -44,4 +50,36 @@ a { text-decoration: none; color: inherit; }
   .hamburger      { display: flex !important; }
   .close-sidebar  { display: flex !important; }
   .mobile-user    { display: flex !important; }
+
+  /* Stack recipe cards to single column */
+  .recipe-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* Full width modals on mobile */
+  .recipe-modal {
+    padding: 0 !important;
+    align-items: flex-end !important;
+  }
+  .recipe-modal > div {
+    max-width: 100% !important;
+    border-radius: 18px 18px 0 0 !important;
+    max-height: 95vh !important;
+  }
+
+  /* Meal planner scrollable on mobile */
+  .meal-grid {
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+  }
+
+  /* Chat input on mobile */
+  .chat-input {
+    padding: 10px 12px 16px !important;
+  }
+
+  /* Header search hidden on mobile to save space */
+  .header-search {
+    display: none !important;
+  }
 }
