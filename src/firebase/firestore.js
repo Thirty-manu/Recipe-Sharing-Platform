@@ -1,15 +1,15 @@
 import {
   collection, addDoc, updateDoc, deleteDoc,
-  doc, getDocs, getDoc, query, where, orderBy,
+  doc, getDoc, query, where, orderBy,
   onSnapshot, serverTimestamp, arrayUnion, arrayRemove,
   increment
 } from "firebase/firestore";
 import { db } from "./config";
 
+export { db };
+
 export const SUPER_ADMIN_EMAIL = "serem695@gmail.com";
-
 export const isAdmin = (user) => user?.email === SUPER_ADMIN_EMAIL;
-
 
 export const addRecipe = (data) =>
   addDoc(collection(db, "recipes"), { ...data, createdAt: serverTimestamp(), likes: 0, likedBy: [] });
@@ -41,7 +41,6 @@ export const subscribeUserRecipes = (uid, callback) => {
   );
 };
 
-
 export const toggleLike = async (recipeId, userId, liked) => {
   const ref = doc(db, "recipes", recipeId);
   await updateDoc(ref, {
@@ -57,7 +56,6 @@ export const toggleFavorite = async (userId, recipeId, isFav) => {
   });
 };
 
-
 export const addComment = (recipeId, data) =>
   addDoc(collection(db, "recipes", recipeId, "comments"), {
     ...data,
@@ -70,7 +68,6 @@ export const subscribeComments = (recipeId, callback) =>
     (snap) => callback(snap.docs.map((d) => ({ id: d.id, ...d.data() })))
   );
 
-g
 export const upsertUser = (uid, data) =>
   updateDoc(doc(db, "users", uid), data).catch(() =>
     addDoc(collection(db, "users"), { uid, ...data, favorites: [], createdAt: serverTimestamp() })
