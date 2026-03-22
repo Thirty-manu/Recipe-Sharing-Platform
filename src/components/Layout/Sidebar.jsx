@@ -1,17 +1,18 @@
-import { Home, TrendingUp, Star, BookOpen, PlusCircle, User, LogOut, X, Shield, CalendarDays, Bell, UtensilsCrossed } from "lucide-react";
+import { Home, TrendingUp, Star, BookOpen, PlusCircle, User, LogOut, X, Shield, CalendarDays, Bell, UtensilsCrossed, MessageCircle } from "lucide-react";
 import { isAdmin } from "../../firebase/firestore";
 
 export default function Sidebar({ page, setPage, user, onLogout, mobileOpen, setMobileOpen }) {
   const admin = isAdmin(user);
   const NAV = [
-    { id: "discover",    label: "Discover",     icon: Home },
-    { id: "trending",    label: "Trending",     icon: TrendingUp },
-    { id: "favorites",   label: "Favorites",    icon: Star },
-    { id: "cooklater",   label: "Cook Later",   icon: Bell },
-    { id: "myrecipes",   label: "My Recipes",   icon: BookOpen },
-    { id: "mealplanner", label: "Meal Planner", icon: CalendarDays },
+    { id: "discover",    label: "Discover",      icon: Home },
+    { id: "trending",    label: "Trending",       icon: TrendingUp },
+    { id: "favorites",   label: "Favorites",      icon: Star },
+    { id: "cooklater",   label: "Cook Later",     icon: Bell },
+    { id: "myrecipes",   label: "My Recipes",     icon: BookOpen },
+    { id: "mealplanner", label: "Meal Planner",   icon: CalendarDays },
+    { id: "chat",        label: "Community Chat", icon: MessageCircle },
     ...(admin ? [{ id: "addrecipe", label: "Add Recipe", icon: PlusCircle }] : []),
-    { id: "profile",     label: "Profile",      icon: User },
+    { id: "profile",     label: "Profile",        icon: User },
   ];
 
   return (
@@ -28,7 +29,6 @@ export default function Sidebar({ page, setPage, user, onLogout, mobileOpen, set
         flexShrink: 0, position: "relative", zIndex: 50, transition: "transform .25s ease"
       }} className={`sidebar ${mobileOpen ? "sidebar-open" : ""}`}>
 
-        {/* Logo */}
         <div style={{
           padding: "20px 16px 16px", borderBottom: "1px solid var(--border)",
           display: "flex", alignItems: "center", justifyContent: "space-between"
@@ -51,7 +51,6 @@ export default function Sidebar({ page, setPage, user, onLogout, mobileOpen, set
           </button>
         </div>
 
-        {/* Admin badge */}
         {admin && (
           <div style={{
             margin: "10px 8px 0", background: "rgba(88,101,242,.12)",
@@ -63,7 +62,6 @@ export default function Sidebar({ page, setPage, user, onLogout, mobileOpen, set
           </div>
         )}
 
-        {/* Nav */}
         <nav style={{ flex: 1, padding: "12px 8px", overflowY: "auto" }}>
           <p style={{
             fontSize: 11, fontWeight: 700, color: "var(--text-muted)",
@@ -85,7 +83,7 @@ export default function Sidebar({ page, setPage, user, onLogout, mobileOpen, set
               >
                 <Icon size={17} />
                 {label}
-                {(id === "mealplanner" || id === "cooklater") && (
+                {["mealplanner","cooklater","chat"].includes(id) && (
                   <span style={{
                     marginLeft: "auto", fontSize: 10, background: "rgba(88,101,242,.2)",
                     color: "var(--accent)", padding: "2px 6px", borderRadius: 10, fontWeight: 700
@@ -96,7 +94,6 @@ export default function Sidebar({ page, setPage, user, onLogout, mobileOpen, set
           })}
         </nav>
 
-        {/* User */}
         <div style={{ padding: "12px 8px", borderTop: "1px solid var(--border)" }}>
           <div style={{ display: "flex", alignItems: "center", gap: 10, padding: "8px 10px", borderRadius: 8 }}>
             <div style={{ position: "relative" }}>
