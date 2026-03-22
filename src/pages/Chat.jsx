@@ -1,25 +1,43 @@
 import { useState, useEffect, useRef } from "react";
 import { collection, addDoc, onSnapshot, orderBy, query, deleteDoc, doc, serverTimestamp } from "firebase/firestore";
 import { db, isAdmin } from "../firebase/firestore";
-import { Send, Trash2, MessageCircle } from "lucide-react";
+import { Send, Trash2, MessageCircle, Volume2, VolumeX } from "lucide-react";
+import { useNotificationSound } from "../hooks/useNotificationSound";
 import toast from "react-hot-toast";
 
 export default function Chat({ user }) {
   const [messages, setMessages] = useState([]);
   const [text, setText] = useState("");
   const [loading, setLoading] = useState(true);
+  const [soundOn, setSoundOn] = useState(true);
   const bottomRef = useRef(null);
+  const isFirstLoad = useRef(true);
+  const prevCount = useRef(0);
   const admin = isAdmin(user);
+  const { playSound } = useNotificationSound();
 
   useEffect(() => {
     const q = query(collection(db, "chat"), orderBy("createdAt", "asc"));
     const unsub = onSnapshot(q, (snap) => {
-      setMessages(snap.docs.map(d => ({ id: d.id, ...d.data() })));
+      const msgs = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+
+      // Play sound when new message arrives from someone else
+      if (!isFirstLoad.current && msgs.length > prevCount.current) {
+        const latest = msgs[msgs.length - 1];
+        if (latest.authorId !== user.uid && soundOn) {
+          playSound();
+        }
+      }
+
+      if (isFirstLoad.current) isFirstLoad.current = false;
+      prevCount.current = msgs.length;
+
+      setMessages(msgs);
       setLoading(false);
     }, () => setLoading(false));
     const timer = setTimeout(() => setLoading(false), 2000);
     return () => { unsub(); clearTimeout(timer); };
-  }, []);
+  }, [soundOn]);
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -79,6 +97,26 @@ export default function Chat({ user }) {
   return (
     <div style={{ height: "100%", display: "flex", flexDirection: "column", overflow: "hidden" }}>
       <style>{`@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }`}</style>
+
+      {/* Sound toggle bar */}
+      <div style={{
+        padding: "8px 20px", borderBottom: "1px solid var(--border)",
+        display: "flex", alignItems: "center", justifyContent: "space-between"
+      }}>
+        <p style={{ fontSize: 13, color: "var(--text-muted)" }}>
+          {messages.length} message{messages.length !== 1 ? "s" : ""}
+        </p>
+        <button onClick={() => setSoundOn(s => !s)} style={{
+          display: "flex", alignItems: "center", gap: 6, padding: "5px 12px",
+          background: soundOn ? "rgba(88,101,242,.12)" : "var(--bg-card)",
+          border: `1px solid ${soundOn ? "rgba(88,101,242,.3)" : "var(--border)"}`,
+          borderRadius: 8, color: soundOn ? "var(--accent)" : "var(--text-muted)",
+          fontSize: 12, fontWeight: 600, transition: "all .2s"
+        }}>
+          {soundOn ? <Volume2 size={14} /> : <VolumeX size={14} />}
+          {soundOn ? "Sound On" : "Sound Off"}
+        </button>
+      </div>
 
       {/* Messages */}
       <div style={{ flex: 1, overflowY: "auto", padding: "20px 20px 8px" }} className="page-scroll">
