@@ -27,16 +27,15 @@ export default function App() {
   const [modalRecipe, setModalRecipe] = useState(null);
   const [userProfile, setUserProfile] = useState(null);
 
-  // ── Handle browser back button ──────────────────────────
+  
   useEffect(() => {
-    // Push initial state
+    
     window.history.pushState({ page: "discover" }, "", "");
 
     const handlePopState = (e) => {
       if (e.state?.page) {
         setPage(e.state.page);
       } else {
-        // Instead of leaving the app, go to discover
         setPage("discover");
         window.history.pushState({ page: "discover" }, "", "");
       }
@@ -46,7 +45,6 @@ export default function App() {
     return () => window.removeEventListener("popstate", handlePopState);
   }, []);
 
-  // Push state when page changes
   const navigateTo = (newPage) => {
     window.history.pushState({ page: newPage }, "", "");
     setPage(newPage);
