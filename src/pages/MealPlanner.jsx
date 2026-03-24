@@ -9,7 +9,6 @@ const DAYS = ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sun
 const MEALS = ["Breakfast","Lunch","Dinner"];
 const MEAL_ICONS = { Breakfast: "🌅", Lunch: "☀️", Dinner: "🌙" };
 
-// Skeleton cell
 const SkeletonCell = () => (
   <div style={{ minHeight: 80, borderRadius: 10, background: "var(--bg-card)", border: "1px solid var(--border)", animation: "pulse 1.5s ease-in-out infinite" }} />
 );
@@ -30,10 +29,8 @@ export default function MealPlanner({ user }) {
       if (snap.exists()) setPlan(snap.data().plan || {});
       setLoading(false);
     }, () => {
-      // On error still stop loading
       setLoading(false);
     });
-    // Stop skeleton after 1.5s max regardless
     const timer = setTimeout(() => setLoading(false), 1500);
     return () => { unsub(); clearTimeout(timer); };
   }, [user]);
@@ -143,7 +140,6 @@ export default function MealPlanner({ user }) {
                 const key = `${day}_${meal}`;
                 const entry = plan[key];
 
-                // Show skeleton while loading
                 if (loading) return <SkeletonCell key={day} />;
 
                 return (
