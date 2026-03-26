@@ -1,18 +1,18 @@
-import { Menu, Search, LogOut, Home, TrendingUp, Star, Bell, BookOpen, PlusCircle, CalendarDays, User, MessageCircle } from "lucide-react";
+import { Menu, Search, Home, TrendingUp, Star, Bell, BookOpen, PlusCircle, CalendarDays, User, MessageCircle } from "lucide-react";
 
 const PAGE_TITLES = {
-  discover:    { title: "Discover",        icon: Home },
-  trending:    { title: "Trending",         icon: TrendingUp },
-  favorites:   { title: "Favorites",        icon: Star },
-  cooklater:   { title: "Cook Later",       icon: Bell },
-  myrecipes:   { title: "My Recipes",       icon: BookOpen },
-  addrecipe:   { title: "Add Recipe",       icon: PlusCircle },
-  mealplanner: { title: "Meal Planner",     icon: CalendarDays },
-  chat:        { title: "Community Chat",   icon: MessageCircle },
-  profile:     { title: "Profile",          icon: User },
+  discover:    { title: "Discover",       icon: Home },
+  trending:    { title: "Trending",       icon: TrendingUp },
+  favorites:   { title: "Favorites",      icon: Star },
+  cooklater:   { title: "Cook Later",     icon: Bell },
+  myrecipes:   { title: "My Recipes",     icon: BookOpen },
+  addrecipe:   { title: "Add Recipe",     icon: PlusCircle },
+  mealplanner: { title: "Meal Planner",   icon: CalendarDays },
+  chat:        { title: "Community Chat", icon: MessageCircle },
+  profile:     { title: "Profile",        icon: User },
 };
 
-export default function Header({ page, search, setSearch, onMenuClick, user, onLogout }) {
+export default function Header({ page, search, setSearch, onMenuClick, user, onNavigate }) {
   const { title, icon: PageIcon } = PAGE_TITLES[page] || {};
   return (
     <header style={{
@@ -34,7 +34,7 @@ export default function Header({ page, search, setSearch, onMenuClick, user, onL
       </div>
 
       {["discover","trending","favorites","myrecipes"].includes(page) && (
-        <div style={{ position: "relative", maxWidth: 280, width: "100%" }}>
+        <div className="header-search" style={{ position: "relative", maxWidth: 280, width: "100%" }}>
           <Search size={14} style={{
             position: "absolute", left: 10, top: "50%",
             transform: "translateY(-50%)", color: "var(--text-muted)"
@@ -50,16 +50,11 @@ export default function Header({ page, search, setSearch, onMenuClick, user, onL
         </div>
       )}
 
-      <div className="mobile-user" style={{ display: "none", alignItems: "center", gap: 8 }}>
-        <img src={user?.avatar} alt="" style={{ width: 28, height: 28, borderRadius: "50%", objectFit: "cover" }} />
-        <button onClick={onLogout} style={{
-          background: "rgba(237,66,69,.12)", border: "1px solid rgba(237,66,69,.3)",
-          color: "var(--danger)", borderRadius: 8, padding: "6px 10px",
-          display: "flex", alignItems: "center", gap: 5, fontSize: 13, fontWeight: 600
-        }}>
-          <LogOut size={14} /> Sign out
-        </button>
-      </div>
+      {/* Mobile avatar — tap to go to profile */}
+      <button onClick={() => onNavigate("profile")} className="mobile-user"
+        style={{ display: "none", alignItems: "center", gap: 8, background: "none", padding: 0 }}>
+        <img src={user?.avatar} alt="" style={{ width: 32, height: 32, borderRadius: "50%", objectFit: "cover", border: "2px solid var(--accent)" }} />
+      </button>
     </header>
   );
 }

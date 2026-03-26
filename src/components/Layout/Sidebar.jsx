@@ -1,7 +1,7 @@
-import { Home, TrendingUp, Star, BookOpen, PlusCircle, User, LogOut, X, Shield, CalendarDays, Bell, UtensilsCrossed, MessageCircle } from "lucide-react";
+import { Home, TrendingUp, Star, BookOpen, PlusCircle, User, X, Shield, CalendarDays, Bell, UtensilsCrossed, MessageCircle } from "lucide-react";
 import { isAdmin } from "../../firebase/firestore";
 
-export default function Sidebar({ page, setPage, user, onLogout, mobileOpen, setMobileOpen }) {
+export default function Sidebar({ page, setPage, user, mobileOpen, setMobileOpen }) {
   const admin = isAdmin(user);
   const NAV = [
     { id: "discover",    label: "Discover",      icon: Home },
@@ -29,6 +29,7 @@ export default function Sidebar({ page, setPage, user, onLogout, mobileOpen, set
         flexShrink: 0, position: "relative", zIndex: 50, transition: "transform .25s ease"
       }} className={`sidebar ${mobileOpen ? "sidebar-open" : ""}`}>
 
+        {/* Logo */}
         <div style={{
           padding: "20px 16px 16px", borderBottom: "1px solid var(--border)",
           display: "flex", alignItems: "center", justifyContent: "space-between"
@@ -51,6 +52,7 @@ export default function Sidebar({ page, setPage, user, onLogout, mobileOpen, set
           </button>
         </div>
 
+        {/* Admin badge */}
         {admin && (
           <div style={{
             margin: "10px 8px 0", background: "rgba(88,101,242,.12)",
@@ -62,6 +64,7 @@ export default function Sidebar({ page, setPage, user, onLogout, mobileOpen, set
           </div>
         )}
 
+        {/* Nav */}
         <nav style={{ flex: 1, padding: "12px 8px", overflowY: "auto" }}>
           <p style={{
             fontSize: 11, fontWeight: 700, color: "var(--text-muted)",
@@ -94,8 +97,17 @@ export default function Sidebar({ page, setPage, user, onLogout, mobileOpen, set
           })}
         </nav>
 
+        {/* User — click to go to profile */}
         <div style={{ padding: "12px 8px", borderTop: "1px solid var(--border)" }}>
-          <div style={{ display: "flex", alignItems: "center", gap: 10, padding: "8px 10px", borderRadius: 8 }}>
+          <button onClick={() => { setPage("profile"); setMobileOpen(false); }}
+            style={{
+              width: "100%", display: "flex", alignItems: "center", gap: 10,
+              padding: "8px 10px", borderRadius: 8, background: "none",
+              transition: "background .15s"
+            }}
+            onMouseOver={e => e.currentTarget.style.background = "rgba(255,255,255,.04)"}
+            onMouseOut={e => e.currentTarget.style.background = "none"}
+          >
             <div style={{ position: "relative" }}>
               <img src={user.avatar} alt="" style={{ width: 32, height: 32, borderRadius: "50%", objectFit: "cover" }} />
               {admin && (
@@ -109,20 +121,13 @@ export default function Sidebar({ page, setPage, user, onLogout, mobileOpen, set
                 </div>
               )}
             </div>
-            <div style={{ flex: 1, minWidth: 0 }}>
-              <p style={{ fontSize: 13, fontWeight: 600, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{user.name}</p>
+            <div style={{ flex: 1, minWidth: 0, textAlign: "left" }}>
+              <p style={{ fontSize: 13, fontWeight: 600, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", color: "var(--text-primary)" }}>{user.name}</p>
               <p style={{ fontSize: 11, color: admin ? "var(--accent)" : "var(--text-muted)" }}>
                 {admin ? "Super Admin" : "Chef"}
               </p>
             </div>
-            <button onClick={onLogout} title="Sign out"
-              style={{ background: "none", color: "var(--text-muted)", padding: 4, borderRadius: 6 }}
-              onMouseOver={e => e.currentTarget.style.color = "var(--danger)"}
-              onMouseOut={e => e.currentTarget.style.color = "var(--text-muted)"}
-            >
-              <LogOut size={16} />
-            </button>
-          </div>
+          </button>
         </div>
       </aside>
     </>
