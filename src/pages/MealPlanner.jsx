@@ -12,7 +12,6 @@ const MEAL_ICONS = { Breakfast: "🌅", Lunch: "☀️", Dinner: "🌙" };
 const SkeletonCell = () => (
   <div style={{ minHeight: 80, borderRadius: 10, background: "var(--bg-card)", border: "1px solid var(--border)", animation: "pulse 1.5s ease-in-out infinite" }} />
 );
-
 export default function MealPlanner({ user }) {
   const { recipes } = useAllRecipes();
   const [plan, setPlan] = useState({});
@@ -21,7 +20,6 @@ export default function MealPlanner({ user }) {
   const [checkedItems, setCheckedItems] = useState({});
   const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(true);
-
   useEffect(() => {
     if (!user) return;
     const ref = doc(db, "mealPlans", user.uid);
@@ -34,7 +32,6 @@ export default function MealPlanner({ user }) {
     const timer = setTimeout(() => setLoading(false), 1500);
     return () => { unsub(); clearTimeout(timer); };
   }, [user]);
-
   const savePlan = async (newPlan) => {
     try { await setDoc(doc(db, "mealPlans", user.uid), { plan: newPlan, updatedAt: new Date() }); }
     catch { toast.error("Couldn't save plan"); }
