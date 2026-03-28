@@ -5,18 +5,15 @@ import { useMyRecipes } from "../hooks/useRecipes";
 import { deleteRecipe, isAdmin } from "../firebase/firestore";
 import { Pencil, Trash2, PlusCircle, Lock } from "lucide-react";
 import toast from "react-hot-toast";
-
 export default function MyRecipes({ user, userProfile, search, onOpen }) {
   const { recipes } = useMyRecipes(user.uid);
   const [editing, setEditing] = useState(null);
   const [adding, setAdding] = useState(false);
   const admin = isAdmin(user);
-
   const filtered = recipes.filter(r => {
     const q = search.toLowerCase();
     return !q || r.title?.toLowerCase().includes(q);
   });
-
   const handleDelete = async (id) => {
     if (!confirm("Delete this recipe?")) return;
     try { await deleteRecipe(id); toast.success("Recipe deleted"); }
