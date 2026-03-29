@@ -18,7 +18,6 @@ import MealPlanner from "./pages/MealPlanner";
 import CookLater from "./pages/CookLater";
 import Chat from "./pages/Chat";
 import "./styles/globals.css";
-
 export default function App() {
   const { user, loading, login, logout } = useAuth();
   const [page, setPage] = useState("discover");
@@ -26,7 +25,6 @@ export default function App() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [modalRecipe, setModalRecipe] = useState(null);
   const [userProfile, setUserProfile] = useState(null);
-
   useEffect(() => {
     window.history.pushState({ page: "discover" }, "", "");
     const handlePopState = (e) => {

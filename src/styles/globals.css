@@ -29,7 +29,7 @@ button { font-family: var(--font); cursor: pointer; border: none; outline: none;
 input, textarea, select { font-family: var(--font); outline: none; }
 a { text-decoration: none; color: inherit; }
 
-/* ── Mobile ───────────────────────────────────────────── */
+
 @media (max-width: 768px) {
   body { overflow: hidden; }
 
